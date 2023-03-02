@@ -13,6 +13,7 @@ import utils.time_utils as time_utils
 
 from common import corp_we_chat
 from common import web_spider
+from common import chatgpt
 from dao import early_check_dao
 from dao import zh_config_dao
 from jobs import *
@@ -90,76 +91,77 @@ def forward_to_kolly(msg):
     # 如果是群聊，但没有被@，则不回复
     if isinstance(msg.chat, Group) and not msg.is_at:
         return
-    elif msg.sender.name == '##小号##' or msg.sender.name == '极致科创-大雄聊数码对接群':
-        logger.info('收到群聊「{}」「{}」的消息：{}'.format(msg.sender.name, msg.member.name, msg.text))
-        if 'OPPO7' in msg.text or 'oppo7' in msg.text or 'Oppo7' in msg.text:  
-            ret = sync_data.query_brand_order2('oppo', 7)
-            logger.info(ret)
-            return ret
-        elif 'VIVO7' in msg.text or 'vivo7' in msg.text or 'Vivo7' in msg.text:  
-            ret = sync_data.query_brand_order2('vivo', 7)
-            logger.info(ret)
-            return ret
-        elif'OPPO14' in msg.text or 'oppo14' in msg.text or 'Oppo14' in msg.text:  
-            ret = sync_data.query_brand_order2('oppo', 14)
-            logger.info(ret)
-            return ret
-        elif 'VIVO14' in msg.text or 'vivo14' in msg.text or 'Vivo14' in msg.text:  
-            ret = sync_data.query_brand_order2('vivo',14)
-            logger.info(ret)
-            return ret
-        elif'OPPO30' in msg.text or 'oppo30' in msg.text or 'Oppo30' in msg.text:  
-            ret = sync_data.query_brand_order2('oppo', 30)
-            logger.info(ret)
-            return ret
-        elif 'VIVO30' in msg.text or 'vivo30' in msg.text or 'Vivo30' in msg.text:  
-            ret = sync_data.query_brand_order2('vivo',30)
-            logger.info(ret)
-            return ret
-        elif 'OPPO' in msg.text or 'oppo' in msg.text or 'Oppo' in msg.text:  
-            ret = sync_data.query_brand_order('oppo')
-            logger.info(ret)
-            return ret
-        elif 'VIVO' in msg.text or 'vivo' in msg.text or 'Vivo' in msg.text:  
-            ret = sync_data.query_brand_order('vivo')
-            logger.info(ret)
-            return ret
-        elif 'q5' in msg.text:
-            ret = sync_data.query_phone_order('真我Q5 6nm骁龙')
-            logger.info(ret)
-            return ret
-        elif 'neo3' in msg.text:
-            ret = sync_data.query_phone_order('GT Neo3')
-            logger.info(ret)
-            return ret
-        elif 'test' in msg.text:
-            return "test ok"
-        if 'draft' == msg.text:  # 查所有文字草稿
-            return '\n'.join(auto.query_article_draft())
-    elif msg.sender.name == '内测' or msg.sender.name == '「蓝猫」早起俱乐部':
-        logger.info('收到群聊「{}」「{}」的消息：{}'.format(msg.sender.name, msg.member.name, msg.text))
-        if '#早起打卡' in msg.text:
-            current_date = time_utils.get_today_date()
-            current_time = time_utils.get_current_time()
-
-            if current_time < '05:00' or current_time > '06:45':
-                return '「' + msg.member.name + '」，请在早上 05:00 到 06:45 之间打卡~'
-
-            if len(early_check_dao.query_early_check_rows_by_user_name_and_date(msg.member.name,
-                                                                                time_utils.get_today_date())) > 0:
-                sum = len(early_check_dao.query_early_check_rows_by_user_name(msg.member.name))
-                return '「' + msg.member.name + '」，你今天打卡过了~ 当前打卡进度' + str(sum) + '/30'
-
-            early_check_dao.add_early_check(msg.member.name, current_date, current_time)
-
-            sum = len(early_check_dao.query_early_check_rows_by_user_name(msg.member.name))
-
-            return '恭喜「' + msg.member.name + '」早起打卡成功，当前打卡进度' + str(sum) + '/30，继续努力哦~'
-        else:
-            return '不识别的指令'
+    # elif msg.sender.name == '##小号##' or msg.sender.name == '极致科创-大雄聊数码对接群':
+    #     logger.info('收到群聊「{}」「{}」的消息：{}'.format(msg.sender.name, msg.member.name, msg.text))
+    #     if 'OPPO7' in msg.text or 'oppo7' in msg.text or 'Oppo7' in msg.text:
+    #         ret = sync_data.query_brand_order2('oppo', 7)
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'VIVO7' in msg.text or 'vivo7' in msg.text or 'Vivo7' in msg.text:
+    #         ret = sync_data.query_brand_order2('vivo', 7)
+    #         logger.info(ret)
+    #         return ret
+    #     elif'OPPO14' in msg.text or 'oppo14' in msg.text or 'Oppo14' in msg.text:
+    #         ret = sync_data.query_brand_order2('oppo', 14)
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'VIVO14' in msg.text or 'vivo14' in msg.text or 'Vivo14' in msg.text:
+    #         ret = sync_data.query_brand_order2('vivo',14)
+    #         logger.info(ret)
+    #         return ret
+    #     elif'OPPO30' in msg.text or 'oppo30' in msg.text or 'Oppo30' in msg.text:
+    #         ret = sync_data.query_brand_order2('oppo', 30)
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'VIVO30' in msg.text or 'vivo30' in msg.text or 'Vivo30' in msg.text:
+    #         ret = sync_data.query_brand_order2('vivo',30)
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'OPPO' in msg.text or 'oppo' in msg.text or 'Oppo' in msg.text:
+    #         ret = sync_data.query_brand_order('oppo')
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'VIVO' in msg.text or 'vivo' in msg.text or 'Vivo' in msg.text:
+    #         ret = sync_data.query_brand_order('vivo')
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'q5' in msg.text:
+    #         ret = sync_data.query_phone_order('真我Q5 6nm骁龙')
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'neo3' in msg.text:
+    #         ret = sync_data.query_phone_order('GT Neo3')
+    #         logger.info(ret)
+    #         return ret
+    #     elif 'test' in msg.text:
+    #         return "test ok"
+    #     if 'draft' == msg.text:  # 查所有文字草稿
+    #         return '\n'.join(auto.query_article_draft())
+    # elif msg.sender.name == '内测' or msg.sender.name == '「蓝猫」早起俱乐部':
+    #     logger.info('收到群聊「{}」「{}」的消息：{}'.format(msg.sender.name, msg.member.name, msg.text))
+    #     if '#早起打卡' in msg.text:
+    #         current_date = time_utils.get_today_date()
+    #         current_time = time_utils.get_current_time()
+    #
+    #         if current_time < '05:00' or current_time > '06:45':
+    #             return '「' + msg.member.name + '」，请在早上 05:00 到 06:45 之间打卡~'
+    #
+    #         if len(early_check_dao.query_early_check_rows_by_user_name_and_date(msg.member.name,
+    #                                                                             time_utils.get_today_date())) > 0:
+    #             sum = len(early_check_dao.query_early_check_rows_by_user_name(msg.member.name))
+    #             return '「' + msg.member.name + '」，你今天打卡过了~ 当前打卡进度' + str(sum) + '/30'
+    #
+    #         early_check_dao.add_early_check(msg.member.name, current_date, current_time)
+    #
+    #         sum = len(early_check_dao.query_early_check_rows_by_user_name(msg.member.name))
+    #
+    #         return '恭喜「' + msg.member.name + '」早起打卡成功，当前打卡进度' + str(sum) + '/30，继续努力哦~'
+    #     else:
+    #         return '不识别的指令'
     else:
         logger.info('收到群聊「{}」「{}」的消息：{}'.format(msg.sender.name, msg.member.name, msg.text))
-        msg.forward(user_kolly, prefix='群聊「' + msg.sender.name + '」的「' + msg.member.name + '」发送内容:')
+        # msg.forward(user_kolly, prefix='群聊「' + msg.sender.name + '」的「' + msg.member.name + '」发送内容:')
+        return chatgpt.chat(msg.text)
 
 
 # 自动回复
