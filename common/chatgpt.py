@@ -6,7 +6,7 @@ def chat(keyword):
     url = "https://api.openai.com/v1/chat/completions"
 
     header = {
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
         'content-type': 'application/json',
     }
 
@@ -28,4 +28,7 @@ def chat(keyword):
 
 
 if __name__ == "__main__":
-    print(chat("你是谁？"))
+    a = "@小糖同学 写的不够详细"
+    a = a[6:]
+    # print(chat("你是谁？"))
+    print(a)

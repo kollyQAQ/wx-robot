@@ -161,7 +161,7 @@ def forward_to_kolly(msg):
     else:
         logger.info('收到群聊「{}」「{}」的消息：{}'.format(msg.sender.name, msg.member.name, msg.text))
         # msg.forward(user_kolly, prefix='群聊「' + msg.sender.name + '」的「' + msg.member.name + '」发送内容:')
-        return chatgpt.chat(msg.text)
+        return chatgpt.chat(msg.text[6:])
 
 
 # 自动回复
@@ -175,7 +175,8 @@ def auto_reply(msg):
     sleep(random.randint(1, 2))
 
     if msg.sender.name != 'kolly🤔-1':
-        return
+        return chatgpt.chat(msg.text)
+        # return
 
     if '1' == msg.text:  # 查今日佣金
         ret = sync_data.query_today_earnings() + '\n\n' + sync_data.query_jingfen_click() + '\n\n' + sync_data.query_today_data() + '\n\n' + sync_data.get_zhihu_like(False)
@@ -285,7 +286,8 @@ def auto_reply(msg):
     elif 'help' == msg.text:
         return "可用命令：【1】\n【order】\n【draft】\n【jj】\n【hot】\n【替换草稿模板+问题ID】"
     else:
-        return "不识别的命令"
+        # return "不识别的命令"
+        return chatgpt.chat(msg.text)
 
 
 def send_corp_wechat(msg):
